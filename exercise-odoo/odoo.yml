@@ -3,6 +3,23 @@ kind: Namespace
 metadata:
   name: odoo
 ---
+kind: ConfigMap
+apiVersion: v1
+metadata:
+  name: odoo-configmap
+  namespace: odoo
+data:
+  DB_USER: "odoo"
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: odoo-secret
+  namespace: odoo
+type: Opaque
+data:
+  DB_PASSWORD: azhzbWFlc3Rybw==
+---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -27,9 +44,15 @@ spec:
             - name: POSTGRESQL_DATABASE
               value: k8smaestro
             - name: POSTGRESQL_PASSWORD
-              value: k8smaestro
+              valueFrom:
+                secretKeyRef:
+                  name: odoo-secret 
+                  key: DB_PASSWORD
             - name: POSTGRESQL_USERNAME
-              value: odoo
+              valueFrom:
+                configMapKeyRef:
+                  name: odoo-configmap
+                  key: DB_USER
           volumeMounts:
             - name: postgres-storage
               mountPath: /bitnami/postgresql
@@ -67,11 +90,20 @@ spec:
           - name: ODOO_DATABASE_NAME
             value: k8smaestro
           - name: ODOO_DATABASE_USER
-            value: odoo
+            valueFrom:
+              configMapKeyRef:
+                name: odoo-configmap
+                key: DB_USER
           - name: ODOO_DATABASE_ADMIN_PASSWORD
-            value: k8smaestro
+            valueFrom:
+              secretKeyRef:
+                name: odoo-secret 
+                key: DB_PASSWORD
           - name: ODOO_DATABASE_PASSWORD
-            value: k8smaestro
+            valueFrom:
+              secretKeyRef:
+                name: odoo-secret 
+                key: DB_PASSWORD
           - name: ODOO_EMAIL
             value: user@example.com
           - name: ODOO_PASSWORD
