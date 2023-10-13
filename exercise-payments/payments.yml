@@ -1,0 +1,57 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: payments
+---
+kind: ConfigMap
+apiVersion: v1
+metadata:
+  name: merchant-map
+  namespace: payments
+data:
+  merchant-id: "123456"
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: payment-key-secret
+  namespace: payments
+type: Opaque
+data:
+  api-key: azhzbWFlc3Rybw==
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: payments-app
+  namespace: payments
+spec:
+  selector:
+    matchLabels:
+      app: payments-app
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: payments-app
+    spec:
+      containers:
+      - name: busybox-payment
+        image: busybox:1.36.0
+        command:
+        - sh
+        - -c
+        - |
+          echo "MERCHANT_ID: $MERCHANT_ID"
+          echo "PAYMENT_GATEWAY_API_KEY: $PAYMENT_GATEWAY_API_KEY"        
+        env:
+          - name: MERCHANT_ID
+            valueFrom:
+              configMapKeyRef:
+                name: merchant-map
+                key: merchant-id
+          - name: PAYMENT_GATEWAY_API_KEY
+            valueFrom:
+              secretKeyRef:
+                name: payment-key-secret 
+                key: api-key
