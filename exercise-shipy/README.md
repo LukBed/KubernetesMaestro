@@ -22,4 +22,17 @@ Check Ingress Controller external IP:
 kubectl get svc --namespace=ingress-nginx
 ```
 
+Or
+
+``bash
+kubectl get ingress -n shipy
+``````
+
+Wait until IP is ready:
+
+```
+NAME               CLASS   HOSTS   ADDRESS         PORTS   AGE
+ingress-resource   nginx   *       34.118.53.253   80      51s
+```
+
 Then call that IP from a browser.
