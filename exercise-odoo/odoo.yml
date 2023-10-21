@@ -20,6 +20,19 @@ type: Opaque
 data:
   DB_PASSWORD: azhzbWFlc3Rybw==
 ---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: pvc-odoo
+  namespace: odoo
+spec:
+  storageClassName: "standard-rwo"
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 10Gi
+---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -74,7 +87,11 @@ spec:
     metadata:
       labels:
         app: odoo-app
-    spec:
+    spec:    
+      volumes:
+        - name: odoo-storage
+          persistentVolumeClaim:
+            claimName: pvc-odoo
       containers:
       - name: odoo-app
         image: bitnami/odoo
@@ -108,6 +125,10 @@ spec:
             value: user@example.com
           - name: ODOO_PASSWORD
             value: bitnami
+        volumeMounts:
+            - name: odoo-storage
+              mountPath: /bitnami/odoo
+
 ---
 apiVersion: v1
 kind: Service
