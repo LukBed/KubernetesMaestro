@@ -43,7 +43,8 @@ spec:
   - metadata:
       name: data
     spec:
-      accessModes: [ "ReadWriteOnce" ]
+      storageClassName: "my-gce-pd"
+      accessModes: [ "ReadWriteOnce" ] #from 05 module
       resources:
         requests:
           storage: 1Gi
