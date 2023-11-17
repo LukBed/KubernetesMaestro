@@ -28,7 +28,7 @@ metadata:
 spec:
   storageClassName: "standard-rwo"
   accessModes:
-    - ReadWriteOnce
+    - ReadWriteMany
   resources:
     requests:
       storage: 10Gi
@@ -83,6 +83,11 @@ spec:
     matchLabels:
       app: odoo-app
   replicas: 1
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1 # how many pods we can add at a time
+      maxUnavailable: 0 # how many pods can be unavailable during the rolling update
   template:
     metadata:
       labels:
@@ -128,6 +133,13 @@ spec:
         volumeMounts:
             - name: odoo-storage
               mountPath: /bitnami/odoo
+        resources:
+          requests:
+            cpu: "500m"
+            memory: "512Mi"
+          limits:
+            cpu: "1"
+            memory: "1Gi"
 
 ---
 apiVersion: v1
