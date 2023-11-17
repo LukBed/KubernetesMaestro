@@ -99,7 +99,7 @@ spec:
             claimName: pvc-odoo
       containers:
       - name: odoo-app
-        image: bitnami/odoo
+        image: bitnami/odoo:15
         ports:
           - containerPort: 8069
             protocol: TCP
